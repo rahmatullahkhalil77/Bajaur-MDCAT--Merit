@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bajaur MDCAT Merit List 2026</title>
+<meta name="description" content="Submit your MDCAT, Matric and FSc marks to calculate your aggregate and join the Bajaur MDCAT merit list.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">BJ</span>
+      <span class="brand-text">
+        <strong>Bajaur MDCAT Merit List</strong>
+        <span>District Merit Portal &middot; 2026</span>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="#register">Register</a>
+      <a href="#merit-list">Merit List</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="container">
+    <span class="hero-eyebrow">Bajaur District &middot; MDCAT 2026</span>
+    <h1>Bajaur MDCAT Merit List 2026</h1>
+    <p>Submit your MDCAT, Matric, and FSc marks to calculate your aggregate and take your place on the Bajaur MDCAT merit list.</p>
+    <div class="restriction">
+      This platform is exclusively for students from Bajaur District.
+    </div>
+    <div class="hero-actions">
+      <a href="#register" class="btn btn-gold">Submit your marks</a>
+      <a href="#merit-list" class="btn btn-outline">View merit list</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section" id="register" style="padding-top:0;">
+    <div class="container">
+
+      <div class="card form-card" id="form-card">
+        <h2>Student registration</h2>
+        <p class="form-sub">All fields are required. Your aggregate is calculated automatically as you type. Every student's totals can be different — enter your own obtained and total marks for each exam.</p>
+
+        <div class="form-alert error hidden" id="form-error" role="alert"></div>
+        <div class="form-alert success hidden" id="form-success" role="status"></div>
+
+        <div class="aggregate-preview">
+          <span class="label">Your Aggregate</span>
+          <span class="value" id="agg-preview">&mdash;<span> %</span></span>
+        </div>
+
+        <form id="mdcat-form" novalidate>
+
+          <fieldset>
+            <legend>Student details</legend>
+            <div class="field-row">
+              <div class="field" id="field-name">
+                <label for="student-name">Student name</label>
+                <input type="text" id="student-name" name="studentName" autocomplete="name" placeholder="Dr Ihsan Ullah Khalil" required>
+                <div class="field-error"></div>
+              </div>
+            </div>
+            <div class="field-row" style="margin-top:14px;">
+              <div class="field" id="field-district">
+                <label for="district">District</label>
+                <input type="text" id="district" name="district" value="Bajaur" required readonly>
+                <div class="hint">Registration is limited to Bajaur District students.</div>
+                <div class="field-error"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>MDCAT marks</legend>
+            <div class="field-row two-col">
+              <div class="field" id="field-mdcat-obt">
+                <label for="mdcat-obtained">Obtained marks</label>
+                <input type="number" id="mdcat-obtained" name="mdcatObtained" min="0" step="0.01" placeholder=" 173" required>
+                <div class="field-error"></div>
+              </div>
+              <div class="field" id="field-mdcat-total">
+                <label for="mdcat-total">Total marks</label>
+                <input type="number" id="mdcat-total" name="mdcatTotal" min="1" step="0.01" value="180" required>
+                <div class="field-error"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Matric marks</legend>
+            <div class="field-row two-col">
+              <div class="field" id="field-matric-obt">
+                <label for="matric-obtained">Obtained marks</label>
+                <input type="number" id="matric-obtained" name="matricObtained" min="0" step="0.01" placeholder=" 1037" required>
+                <div class="field-error"></div>
+              </div>
+              <div class="field" id="field-matric-total">
+                <label for="matric-total">Total marks</label>
+                <input type="number" id="matric-total" name="matricTotal" min="1" step="0.01" value="1100" required>
+                <div class="field-error"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>FSc (pre-medical) marks</legend>
+            <div class="field-row two-col">
+              <div class="field" id="field-fsc-obt">
+                <label for="fsc-obtained">Obtained marks</label>
+                <input type="number" id="fsc-obtained" name="fscObtained" min="0" step="0.01" placeholder=" 1059" required>
+                <div class="field-error"></div>
+              </div>
+              <div class="field" id="field-fsc-total">
+                <label for="fsc-total">Total marks</label>
+                <input type="number" id="fsc-total" name="fscTotal" min="1" step="0.01" value="1200" required>
+                <div class="field-error"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary btn-full" id="submit-btn">Submit and join merit list</button>
+        </form>
+      </div>
+
+      <div class="card result-card hidden" id="result-card">
+        <div class="rosette">&#9733;</div>
+        <p class="hint" style="color:#6b7a71;">Your Aggregate</p>
+        <div class="agg-number" id="result-agg">92.78%</div>
+        <div class="result-breakdown">
+          <div class="item"><div class="k">MDCAT (50%)</div><div class="v" id="result-mdcat">&mdash;</div></div>
+          <div class="item"><div class="k">FSc (40%)</div><div class="v" id="result-fsc">&mdash;</div></div>
+          <div class="item"><div class="k">Matric (10%)</div><div class="v" id="result-matric">&mdash;</div></div>
+        </div>
+        <a href="#merit-list" class="btn btn-gold">View the merit list</a>
+      </div>
+
+      <div class="privacy-note">
+        <strong>Privacy notice.</strong> Information you submit is used only to prepare the Bajaur MDCAT merit list. Your name, district and academic marks may appear on the public merit list. We do not collect CNICs, passwords, phone numbers, or email addresses on this site.
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section-alt" id="merit-list">
+    <div class="container">
+      <div class="section-head">
+        <h2>Merit List</h2>
+        <p>Ranked automatically from highest to lowest aggregate. Only students registered as Bajaur District appear here.</p>
+      </div>
+
+      <div class="merit-toolbar" style="margin-top:0;">
+        <div class="merit-search">
+          <input type="search" id="merit-search" placeholder="Search by name&hellip;" aria-label="Search the merit list by name">
+        </div>
+        <div class="merit-count" id="merit-count">Loading&hellip;</div>
+      </div>
+
+      <div class="table-wrap" id="table-wrap">
+        <table class="merit-table" id="merit-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Student name</th>
+              <th>District</th>
+              <th>MDCAT</th>
+              <th>Matric</th>
+              <th>FSc</th>
+              <th>Aggregate</th>
+            </tr>
+          </thead>
+          <tbody id="merit-tbody">
+          </tbody>
+        </table>
+        <div class="empty-state hidden" id="empty-state">
+          <div class="glyph">&mdash;</div>
+          <p>No submissions yet. Be the first Bajaur student to <a href="#register">join the merit list</a>.</p>
+        </div>
+      </div>
+
+      <p class="merit-meta" id="merit-meta"></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    Bajaur MDCAT Merit List 2026 &mdash; a temporary district merit-list initiative.
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
