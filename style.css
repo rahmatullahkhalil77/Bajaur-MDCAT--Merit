@@ -79,6 +79,7 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -89,9 +90,10 @@ img { max-width: 100%; display: block; }
 }
 
 .brand-mark {
-  width: 38px;
+  min-width: 38px;
   height: 38px;
-  border-radius: 50%;
+  padding: 0 6px;
+  border-radius: 19px;
   background: var(--gold);
   color: var(--forest-deep);
   display: flex;
@@ -99,7 +101,8 @@ img { max-width: 100%; display: block; }
   justify-content: center;
   font-family: 'Source Serif 4', serif;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
   flex-shrink: 0;
 }
 
@@ -171,6 +174,14 @@ img { max-width: 100%; display: block; }
   color: var(--white);
   font-size: clamp(2rem, 4.2vw, 2.9rem);
   line-height: 1.15;
+}
+
+.hero-subtitle {
+  color: var(--gold-light);
+  font-family: 'Source Serif 4', serif;
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-weight: 600;
+  margin: -8px 0 0;
 }
 
 .hero p {
@@ -607,6 +618,110 @@ table.merit-table {
   font-size: 0.82rem;
   color: #6b7a71;
   text-align: center;
+}
+
+/* ---------- How it works ---------- */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 520px) {
+  .steps-grid { grid-template-columns: 1fr; }
+}
+
+.step-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 20px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(15, 30, 22, 0.08), 0 14px 28px rgba(15, 30, 22, 0.1);
+}
+
+.step-num {
+  display: inline-block;
+  font-family: 'Source Serif 4', serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.step-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.step-card p {
+  color: #4b5a51;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ---------- Contact / WhatsApp ---------- */
+.contact-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 28px clamp(20px, 5vw, 36px);
+}
+
+.contact-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.contact-card p {
+  color: #4b5a51;
+  margin: 0;
+  max-width: 46ch;
+}
+
+.btn-whatsapp {
+  background: #25d366;
+  color: #073b1e;
+  flex-shrink: 0;
+}
+.btn-whatsapp:hover { background: #2ee879; }
+
+/* ---------- Submit button loading state ---------- */
+#submit-btn {
+  position: relative;
+}
+
+.btn-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+#submit-btn.is-loading .btn-spinner {
+  display: inline-block;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-spinner { animation: none; }
 }
 
 /* ---------- Privacy / footer ---------- */

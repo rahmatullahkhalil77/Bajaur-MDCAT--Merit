@@ -72,6 +72,13 @@
     const errorBox = document.getElementById("form-error");
     const successBox = document.getElementById("form-success");
     const submitBtn = document.getElementById("submit-btn");
+    const submitLabel = submitBtn.querySelector(".btn-label") || submitBtn;
+
+    function setSubmitting(isSubmitting) {
+      submitBtn.disabled = isSubmitting;
+      submitBtn.classList.toggle("is-loading", isSubmitting);
+      submitLabel.textContent = isSubmitting ? "Submitting…" : "Submit Result";
+    }
 
     function fieldWrap(input) {
       return input.closest(".field");
@@ -136,7 +143,9 @@
         return { obt, tot };
       }
 
-      const mdcat = checkPair(fields.mdcatObtained, fields.mdcatTotal, "MDCAT", 180);
+      // No hard-coded totals: every student enters their own actual total for
+      // each subject (MDCAT included), so no cap is enforced here.
+      const mdcat = checkPair(fields.mdcatObtained, fields.mdcatTotal, "MDCAT");
       const matric = checkPair(fields.matricObtained, fields.matricTotal, "Matric");
       const fsc = checkPair(fields.fscObtained, fields.fscTotal, "FSc");
 
@@ -228,8 +237,7 @@
         return;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting…";
+      setSubmitting(true);
 
       const aggregate = computeAggregate(marks);
       const entry = Object.assign({}, marks, {
@@ -239,8 +247,7 @@
 
       const result = await sendToBackend(entry);
 
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit and join merit list";
+      setSubmitting(false);
 
       if (!result.ok) {
         showAlert(
