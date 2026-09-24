@@ -298,8 +298,11 @@
     const metaBox = document.getElementById("merit-meta");
     const emptyState = document.getElementById("empty-state");
     const tableWrap = document.getElementById("table-wrap");
+    const paginationBox = document.getElementById("merit-pagination");
 
-    let allEntries = [];
+    const PAGE_SIZE = 10;
+    let allEntries = [];    // the complete dataset returned by the API (or local cache)
+    let currentPage = 1;
 
     async function fetchEntries() {
       if (isBackendConfigured) {
@@ -325,6 +328,9 @@
 
     // The Apps Script backend already returns aggregate + rank when configured;
     // this re-sorts defensively so the demo-mode (local) path ranks correctly too.
+    // Ranks are assigned here, over the COMPLETE dataset, before any search
+    // filtering or pagination — so a student's rank never changes whether
+    // they're being searched for or viewed on any page.
     function rankAndSort(entries) {
       return entries
         .slice()
@@ -338,59 +344,137 @@
       return div.innerHTML;
     }
 
-    function render(entries, filterText) {
-      const filtered = filterText
-        ? entries.filter((e) =>
-            (e.studentName || "").toLowerCase().includes(filterText.toLowerCase())
-          )
-        : entries;
-
+    function renderRows(pageItems) {
       tbody.innerHTML = "";
+      pageItems.forEach((e) => {
+        const tr = document.createElement("tr");
+        const rankClass = e.rank <= 3 ? "rank-cell top-3" : "rank-cell";
+        tr.innerHTML = `
+          <td class="${rankClass}">${e.rank}</td>
+          <td>${escapeHtml(e.studentName)}</td>
+          <td>${escapeHtml(e.district)}</td>
+          <td>${e.mdcatObtained} / ${e.mdcatTotal}</td>
+          <td>${e.matricObtained} / ${e.matricTotal}</td>
+          <td>${e.fscObtained} / ${e.fscTotal}</td>
+          <td class="agg-cell">${Number(e.aggregate).toFixed(2)}%</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-      if (filtered.length === 0) {
+    function renderPaginationControls(totalPages) {
+      paginationBox.innerHTML = "";
+      if (totalPages <= 1) return;
+
+      function makeButton(label, { page, disabled, current, ariaLabel } = {}) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "page-btn" + (current ? " is-current" : "");
+        btn.textContent = label;
+        if (ariaLabel) btn.setAttribute("aria-label", ariaLabel);
+        if (current) btn.setAttribute("aria-current", "page");
+        if (disabled) btn.disabled = true;
+        if (!disabled && !current) {
+          btn.addEventListener("click", () => {
+            currentPage = page;
+            renderPage();
+            tableWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        }
+        return btn;
+      }
+
+      function makeEllipsis() {
+        const span = document.createElement("span");
+        span.className = "page-ellipsis";
+        span.textContent = "…";
+        return span;
+      }
+
+      paginationBox.appendChild(
+        makeButton("‹ Previous", { page: currentPage - 1, disabled: currentPage === 1, ariaLabel: "Previous page" })
+      );
+
+      // Show all page numbers when there aren't too many; otherwise a
+      // condensed first/last + neighbours-of-current view with ellipses.
+      const pages = [];
+      if (totalPages <= 7) {
+        for (let p = 1; p <= totalPages; p++) pages.push(p);
+      } else {
+        pages.push(1);
+        if (currentPage > 3) pages.push("…");
+        for (let p = Math.max(2, currentPage - 1); p <= Math.min(totalPages - 1, currentPage + 1); p++) {
+          pages.push(p);
+        }
+        if (currentPage < totalPages - 2) pages.push("…");
+        pages.push(totalPages);
+      }
+
+      pages.forEach((p) => {
+        if (p === "…") {
+          paginationBox.appendChild(makeEllipsis());
+        } else {
+          paginationBox.appendChild(makeButton(String(p), { page: p, current: p === currentPage }));
+        }
+      });
+
+      paginationBox.appendChild(
+        makeButton("Next ›", { page: currentPage + 1, disabled: currentPage === totalPages, ariaLabel: "Next page" })
+      );
+    }
+
+    // Filters + paginates the already-ranked full dataset, then renders the
+    // table, pagination controls, and count for whichever page is current.
+    function renderPage() {
+      const ranked = rankAndSort(allEntries);
+      const filterText = searchInput.value.trim();
+
+      const filtered = filterText
+        ? ranked.filter((e) => (e.studentName || "").toLowerCase().includes(filterText.toLowerCase()))
+        : ranked;
+
+      const totalItems = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      if (totalItems === 0) {
         tableWrap.querySelector("table").classList.add("hidden");
         emptyState.classList.remove("hidden");
         emptyState.querySelector("p").innerHTML = filterText
-          ? "No students match that search."
+          ? "No student found."
           : 'No submissions yet. Be the first Bajaur student to <a href="#register">join the merit list</a>.';
+        paginationBox.innerHTML = "";
       } else {
         tableWrap.querySelector("table").classList.remove("hidden");
         emptyState.classList.add("hidden");
 
-        filtered.forEach((e) => {
-          const tr = document.createElement("tr");
-          const rankClass = e.rank <= 3 ? "rank-cell top-3" : "rank-cell";
-          tr.innerHTML = `
-            <td class="${rankClass}">${e.rank}</td>
-            <td>${escapeHtml(e.studentName)}</td>
-            <td>${escapeHtml(e.district)}</td>
-            <td>${e.mdcatObtained} / ${e.mdcatTotal}</td>
-            <td>${e.matricObtained} / ${e.matricTotal}</td>
-            <td>${e.fscObtained} / ${e.fscTotal}</td>
-            <td class="agg-cell">${Number(e.aggregate).toFixed(2)}%</td>
-          `;
-          tbody.appendChild(tr);
-        });
+        const start = (currentPage - 1) * PAGE_SIZE;
+        renderRows(filtered.slice(start, start + PAGE_SIZE));
+        renderPaginationControls(totalPages);
       }
 
-      countBox.textContent =
-        entries.length === 1 ? "1 student registered" : `${entries.length} students registered`;
-    }
-
-    async function loadAndRender(filterText) {
-      allEntries = await fetchEntries();
-      render(rankAndSort(allEntries), filterText || "");
+      countBox.textContent = filterText
+        ? (totalItems === 1 ? "1 student found" : `${totalItems} students found`)
+        : (allEntries.length === 1 ? "1 student registered" : `${allEntries.length} students registered`);
     }
 
     searchInput.addEventListener("input", () => {
-      render(rankAndSort(allEntries), searchInput.value.trim());
+      currentPage = 1;
+      renderPage();
     });
+
+    async function loadAndRender() {
+      allEntries = await fetchEntries();
+      currentPage = 1;
+      renderPage();
+    }
 
     // Exposed so the registration form can refresh the list right after a submission.
     window.__refreshMeritList = function () {
-      loadAndRender(searchInput.value.trim());
+      loadAndRender();
     };
 
-    loadAndRender("");
+    loadAndRender();
   }
 })();
