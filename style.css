@@ -127,6 +127,7 @@ img { max-width: 100%; display: block; }
 .nav-links {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .nav-links a {
@@ -136,6 +137,7 @@ img { max-width: 100%; display: block; }
   font-weight: 500;
   padding: 8px 14px;
   border-radius: 6px;
+  white-space: nowrap;
   transition: background 0.15s ease;
 }
 
@@ -147,6 +149,24 @@ img { max-width: 100%; display: block; }
 .nav-links a.active {
   background: var(--gold);
   color: var(--forest-deep);
+}
+
+@media (max-width: 480px) {
+  .topbar-inner {
+    justify-content: flex-start;
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .nav-links {
+    width: 100%;
+    gap: 4px;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
 }
 
 /* ---------- Hero ---------- */
